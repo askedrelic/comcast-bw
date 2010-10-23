@@ -13,6 +13,8 @@ Usage
 -----
 You need to edit the SETTINGS at the top of the file to insert your comcast username/password.
 
+Then 'python comcast-bw.py'
+
 Broken?
 -------
 I've tested this with my username/account. Comcast's website makes extensive use of "preloading" and redirects, which are stupid and why I hate using it, but I may not have caught every possible combination. 
