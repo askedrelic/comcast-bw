@@ -20,4 +20,5 @@ Broken?
 I've tested this with my username/account. Comcast's website makes extensive use of "preloading" and redirects, which are stupid and why I hate using it, but I may not have caught every possible combination. 
 
 If you run the script with '-v' flag, you can get python logging to figure out where it's broken.
+
 If you run the script with '-vv' flag, you can get mechanize debug for all request/responses and python logging.
