@@ -52,12 +52,13 @@ class Comcast(object):
 
         # Want debugging messages?
         if self.verbose:
-            br.set_debug_http(True)
-            br.set_debug_redirects(True)
-            br.set_debug_responses(True)
             console = logging.StreamHandler()
             log.addHandler(console)
             log.setLevel(logging.INFO)
+        if self.verbose > 1:
+            br.set_debug_http(True)
+            br.set_debug_redirects(True)
+            br.set_debug_responses(True)
 
         # Set a reasonably current User-Agent
         br.addheaders = [('User-agent',
@@ -65,7 +66,6 @@ class Comcast(object):
 
         # Head to Login page
         br.open('https://customer.comcast.com/Public/Home.aspx')
-        log.info('====')
         log.info('Loading sign in page')
         sign_link = br.find_link(text="Sign In")
         br.follow_link(sign_link)
@@ -75,19 +75,16 @@ class Comcast(object):
         br.submit()
 
         # Head to customer homepage, resubmit to get past preloader page
-        log.info('====')
         log.info('Loading customer homepage, redirect')
         br.select_form(nr=0)
         br.submit()
 
         # Head to User information page
         br.open('https://customer.comcast.com/Secure/Users.aspx')
-        log.info('====')
         log.info('Loading customer homepage')
 
         # Head to 
         br.find_link(text="View details")
-        log.info('====')
         log.info('loading details page')
         details = br.find_link(text="View details")
         resp = br.follow_link(details)
@@ -102,7 +99,6 @@ class Comcast(object):
             link = urlparse.urljoin(l.geturl(), url)
 
         resp = br.open(details_link)
-        log.info('====')
         log.info('Loaded details page')
         details_page = resp.read()
         bandwidthDiv = 'UsedWrapper">'
@@ -114,12 +110,12 @@ class Comcast(object):
         return used_bandwidth
 
 if __name__ == '__main__':
-    verbose = False
     # Get command line options and args
-    opts, args = getopt.getopt(sys.argv[1:], 'v')
-    for o, a in opts:
-        if o == '-v':
-            verbose = True
+    opts, args = getopt.getopt(sys.argv[1:], 'vv:v')
+
+    #hack for verbose level
+    #0 for no opts, 1 -v or 2 -v
+    verbose = len(opts)
 
     comcast = Comcast(verbose,username,password)
     print "You have used %s bandwidth this month" % comcast.currentUsage()
