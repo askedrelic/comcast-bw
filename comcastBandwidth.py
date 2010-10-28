@@ -84,7 +84,11 @@ class Comcast(object):
         log.info('Loading customer homepage')
 
         # Head to 
-        br.find_link(text="View details")
+        try:
+            br.find_link(text="View details")
+        except mechanize.LinkNotFoundError:
+            import sys
+            sys.exit("Looks like you don't have a bandwidth details page. Bummer :(")
         log.info('loading details page')
         details = br.find_link(text="View details")
         resp = br.follow_link(details)
@@ -107,7 +111,12 @@ class Comcast(object):
 
         used_bandwidth = details_page[start:end]
 
-        return used_bandwidth
+        #strip GB counter
+        return int(used_bandwidth[:-2])
+
+    @staticmethod
+    def isoCount(size):
+        return (size * 1024) / 700
 
 if __name__ == '__main__':
     # Get command line options and args
@@ -118,4 +127,7 @@ if __name__ == '__main__':
     verbose = len(opts)
 
     comcast = Comcast(verbose,username,password)
-    print "You have used %s bandwidth this month" % comcast.currentUsage()
+    usage = comcast.currentUsage()
+    print "You have used %sGB bandwidth this month" % usage
+    if (usage < 250):
+        print "You can still download %s linux isos this month!" % Comcast.isoCount(250 - usage)
