@@ -13,13 +13,25 @@ import urlparse
 import cookielib
 import warnings
 import logging
-import getopt
+import datetime
+import calendar
 
 import mechanize
 
 ## SETTINGS
 username = "COMCAST USERNAME (username@comcast.net)"
 password = "COMCAST PASSWORD"
+
+help_text = """Usage: comcastBandwidth [-v[v]] [-w]
+
+Logging:
+    -v or -vv       Add more Vs for more verbosity!
+
+Warn Mode
+    -w --warn=NUM   Only output is usage above NUM GB (default is 200GB)
+
+Misc
+    -h --help       This text :<"""
 
 class Comcast(object):
     def __init__(self, verbose, username, password):
@@ -83,7 +95,7 @@ class Comcast(object):
         br.open('https://customer.comcast.com/Secure/Users.aspx')
         log.info('Loading customer homepage')
 
-        # Head to 
+        # Head to
         try:
             br.find_link(text="View details")
         except mechanize.LinkNotFoundError:
@@ -111,23 +123,65 @@ class Comcast(object):
 
         used_bandwidth = details_page[start:end]
 
-        #strip GB counter
-        return int(used_bandwidth[:-2])
+        #strip GB counter and check for 0 usage
+        return int(used_bandwidth[:-2]) or 0
 
     @staticmethod
     def isoCount(size):
         return (size * 1024) / 700
 
-if __name__ == '__main__':
-    # Get command line options and args
-    opts, args = getopt.getopt(sys.argv[1:], 'vv:v')
+    @staticmethod
+    def dateText():
+        #current date
+        date = datetime.date.today()
+        #current day text
+        days = str(date.day) + " day"
+        #get total days in this month
+        days_in_month = str(calendar.monthrange(date.year, date.month)[1] - date.day) + " day"
+        if days > 1:
+            days += 's'
+        if days_in_month > 1:
+            days_in_month += 's'
+        return days + ", with %s remaining in this month" % days_in_month
 
-    #hack for verbose level
-    #0 for no opts, 1 -v or 2 -v
-    verbose = len(opts)
+if __name__ == '__main__':
+    # Get command line options and args and fuck getopt/optparse :<
+    args = sys.argv[1:]
+
+    #verbose: 0 for no opts, 1 -v or 2 -v
+    verbose = 0
+    warn = 200
+    warnMode = False
+    if len(args) > 1:
+        print "One switch at a time."
+        raise SystemExit
+    elif len(args) == 1:
+        opt = args[0]
+        if opt == '-v':
+            verbose = 1
+        elif opt == '-vv':
+            verbose = 2
+        elif opt == '-w':
+            warnMode = True
+        elif opt.count('warn'):
+            warnMode = True
+            try:
+                o, a = opt.split('=')
+                warn = int(a)
+            except:
+                print "Warn needs specific number."
+                raise SystemExit
+        else:
+            print help_text
+            raise SystemExit
 
     comcast = Comcast(verbose,username,password)
     usage = comcast.currentUsage()
-    print "You have used %sGB bandwidth this month" % usage
+
+    #Quit if warn flag is set
+    if warnMode and (usage < warn):
+        raise SystemExit
+
+    print "You have used %sGB bandwidth in %s" % (usage,Comcast.dateText())
     if (usage < 250):
-        print "You can still download %s linux isos this month!" % Comcast.isoCount(250 - usage)
+        print "You can still download %s linux CDs this month!" % Comcast.isoCount(250 - usage)
