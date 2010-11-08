@@ -28,7 +28,7 @@ Logging:
     -v or -vv       Add more Vs for more verbosity!
 
 Warn Mode
-    -w --warn=NUM   Only output is usage above NUM GB (default is 200GB)
+    -w --warn=NUM   Only output if usage above NUM GB (default is 200GB)
 
 Misc
     -h --help       This text :<"""

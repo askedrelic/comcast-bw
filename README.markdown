@@ -12,8 +12,15 @@ Requirements
 Usage
 -----
 You need to edit the SETTINGS at the top of the file to insert your comcast username/password.
-
 Then 'python comcast-bw.py'
+
+Usage: comcastBandwidth [-v[v]] [-w]
+
+Logging:
+    -v or -vv       Add more Vs for more verbosity!
+
+Warn Mode
+    -w --warn=NUM   Only output if usage above NUM GB (default is 200GB)
 
 Broken?
 -------
