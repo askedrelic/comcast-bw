@@ -117,8 +117,9 @@ class Comcast(object):
         resp = br.open(details_link)
         log.info('Loaded details page')
         details_page = resp.read()
-        bandwidthDiv = 'UsedWrapper">'
-        start = details_page.find(bandwidthDiv) + len(bandwidthDiv)
+        usage_span = 'PrimaryColumnContent_UsedWrapper'
+        span_start = details_page.find(usage_span)
+        start = details_page.find('>', span_start) + 1
         end = details_page.find('<', start)
 
         used_bandwidth = details_page[start:end]
