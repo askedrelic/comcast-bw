@@ -125,7 +125,10 @@ class Comcast(object):
         used_bandwidth = details_page[start:end]
 
         #strip GB counter and check for 0 usage
-        return int(used_bandwidth[:-2]) or 0
+        try:
+            return int(used_bandwidth[:-2])
+        except ValueError:
+            return 0
 
     @staticmethod
     def isoCount(size):
