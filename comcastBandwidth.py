@@ -74,9 +74,11 @@ class Comcast(object):
 
         # Set a reasonably current User-Agent
         br.addheaders = [('User-agent',
-            'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_4; en-US) AppleWebKit/534.10 (KHTML, like Gecko) Chrome/8.0.552.11 Safari/534.10')]
+            'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_4; en-US)'
+            'AppleWebKit/534.10 (KHTML, like Gecko)'
+            'Chrome/8.0.552.11 Safari/534.10')]
 
-        # Head to Login page
+        # 1. Head to Login page
         br.open('https://customer.comcast.com/Public/Home.aspx')
         log.info('Loading sign in page')
         sign_link = br.find_link(text="Sign In")
@@ -87,21 +89,35 @@ class Comcast(object):
         br.submit()
 
         # Head to customer homepage, resubmit to get past preloader page
-        log.info('Loading customer homepage, redirect')
+        log.info('Loading redirect to customer homepage')
         br.select_form(nr=0)
         br.submit()
 
-        # Head to User information page
-        br.open('https://customer.comcast.com/Secure/Users.aspx')
-        log.info('Loading customer homepage')
+        # 2. Head to customer homepage
+        log.info('Skipping loading homepage')
+        #br.open('https://customer.comcast.com/Public/Home.aspx')
 
-        # Head to
+        # then force preload
+        #br.open('https://customer.comcast.com/Secure/Preload.aspx?backTo=%2fSecure%2fHome.aspx&preload=true')
+
+
+        # 3. Head to users&settings
+        log.info('Loading users&settings page')
+        br.open('https://customer.comcast.com/Secure/Users.aspx')
+
+        br.open('https://customer.comcast.com/Secure/Preload.aspx?backTo=%2fSecure%2fUsers.aspx&preload=true')
+
+        br.open('https://customer.comcast.com/Secure/Users.aspx')
+
+        log.info('Checking for bandwidth details link')
+        # Head to bandwidth details page
         try:
             br.find_link(text="View details")
         except mechanize.LinkNotFoundError:
             import sys
             sys.exit("Looks like you don't have a bandwidth details page. Bummer :(")
-        log.info('loading details page')
+
+        log.info('Loading bandwidth details page')
         details = br.find_link(text="View details")
         resp = br.follow_link(details)
 
@@ -109,10 +125,10 @@ class Comcast(object):
 
         # Check if link is a preload page and actually follow the preload url,
         # because this preload url seems unique/generated
-        if(details_link.lower().find('preload') != -1):
-            l = urlparse.urlparse(details_link)
-            url = urlparse.parse_qsl(l.query)[0][1]
-            link = urlparse.urljoin(l.geturl(), url)
+        #if(details_link.lower().find('preload') != -1):
+            #l = urlparse.urlparse(details_link)
+            #url = urlparse.parse_qsl(l.query)[0][1]
+            #link = urlparse.urljoin(l.geturl(), url)
 
         resp = br.open(details_link)
         log.info('Loaded details page')
