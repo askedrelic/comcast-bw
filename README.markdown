@@ -1,26 +1,38 @@
 Comcast Bandwidth
 =================
 
-As the repo states, it's a script to login to comcast's website and find your current bandwidth usage. I hate using Comcast's website and I haven't seem to found any automatic notifications for when you come near your 250GB limit.
+As the repo states, it's a script to login to Comcast's website and find your current bandwidth usage. I hate using Comcast's website and I haven't seem to found any automatic notifications for when you come near your 250GB limit.
 
 Now you can setup a cronjob and get daily/weekly stats emailed to you.
 
 Requirements
 -----
-[mechanize library](http://wwwsearch.sourceforge.net/mechanize/)
+* Python 2.6/2.7
+* [mechanize library](http://wwwsearch.sourceforge.net/mechanize/)
+
+For most OSX/Linux machines, easy_install will install mechanize for you (might require sudo)
+
+    easy_install mechanize
 
 Usage
 -----
-You need to edit the SETTINGS at the top of the file to insert your comcast username/password.
-Then 'python comcast-bw.py'
+First, you need to add your Comcast Email and password, by editing the settings at top of the `comcastBandwidth.py` file.
 
-Usage: comcastBandwidth [-v[v]] [-w]
+Then run 'python comcastBandwidth.py' to get your current bandwidth usage.
 
-Logging:
-    -v or -vv       Add more Vs for more verbosity!
+    Usage: comcastBandwidth [-v[v]] [-w]
+    
+    Logging:
+        -v or -vv       Add more Vs for more verbosity!
+    
+    Warn Mode
+        -w --warn=NUM   Only output if usage above NUM GB (default is 200GB)
+        
+Cron Usage
+-----
+This script can be setup to only output if usage is over 200GB (the -w flag default). Therefore, you can run the script nightly and only get warnings once you get close to limit, for the month.
 
-Warn Mode
-    -w --warn=NUM   Only output if usage above NUM GB (default is 200GB)
+    0 0 * * * /home/askedrelic/code/comcast-bw/comcastBandwidth.py -w
 
 Broken?
 -------
