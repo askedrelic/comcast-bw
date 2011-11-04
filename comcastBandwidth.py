@@ -21,9 +21,9 @@ from pynma import PyNMA
 from optparse import OptionParser
 
 ### Settings ###
-username = "adamlandry733@comcast.net"
-password = "gubw5TmZoqhcIIa1"
-nma_api_key = "5ed0f79b9271dbbd0daa9129bef4cf98d800b53baaf35c10"
+username = ""
+password = ""
+nma_api_key = ""
 
 class Comcast(object):
     def __init__(self, verbose, username, password):
