@@ -9,6 +9,7 @@ Requirements
 -----
 * Python 2.6/2.7
 * [mechanize library](http://wwwsearch.sourceforge.net/mechanize/)
+* [pynma library](https://github.com/uskr/pynma)
 
 For most OSX/Linux machines, easy_install will install mechanize for you (might require sudo)
 
@@ -20,19 +21,21 @@ First, you need to add your Comcast Email and password, by editing the settings 
 
 Then run 'python comcastBandwidth.py' to get your current bandwidth usage.
 
-    Usage: comcastBandwidth [-v[v]] [-w]
-    
-    Logging:
-        -v or -vv       Add more Vs for more verbosity!
-    
-    Warn Mode
-        -w --warn=NUM   Only output if usage above NUM GB (default is 200GB)
+    Usage: comcastBandwidth [-v[v]] [-w] [--warn-num=NUM] [-a]
+
+	Options:
+  	-h, --help       show this help message and exit
+  	-v, --verbose    Print status messages to the display
+  	--vv             Print status messages to the display in more detail
+  	-w               Only output if usage above given value  [default: 200gb]
+  	--warn-num=WARN  Max usage before alerting [default: 200gb]
+  	-a, --alert      Sends an alert via Notify My Android
         
 Cron Usage
 -----
-This script can be setup to only output if usage is over 200GB (the -w flag default). Therefore, you can run the script nightly and only get warnings once you get close to limit, for the month.
+This script can be setup to only output or send an alert if usage is over 200GB (the -w flag default). Therefore, you can run the script nightly and only get warnings once you get close to limit, for the month. 
 
-    0 0 * * * /home/askedrelic/code/comcast-bw/comcastBandwidth.py -w
+    0 0 * * * /home/askedrelic/code/comcast-bw/comcastBandwidth.py -w -a
 
 Broken?
 -------
