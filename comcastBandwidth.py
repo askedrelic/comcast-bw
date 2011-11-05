@@ -13,7 +13,7 @@ import cookielib
 import datetime
 import logging
 import mechanize
-import os.path
+import os
 import sys
 import urlparse
 import warnings
@@ -26,19 +26,6 @@ except:
     has_pynma = False
 
 from ConfigParser import SafeConfigParser
-parser = SafeConfigParser()
-
-if os.path.isfile('config.ini'):
-    parser.read('config.ini')
-else:
-    print "It looks like you are missing a config.ini file!"
-    print "Create one using the config.ini.sample"
-    raise SystemExit
-
-### Settings ###
-username = parser.get('comcast', 'username')
-password = parser.get('comcast', 'password')
-nma_api_key = parser.get('notify_my_android', 'api')
 
 class Comcast(object):
     def __init__(self, verbose, username, password):
@@ -172,29 +159,45 @@ def sendAlert(key, usage, date):
         raise ImportError("No module named PyNMA ")
     global p
     pkey = None
-    
+
     p = PyNMA()
     p.addkey(key)
 
     message = "You have used %sGB bandwidth in %s" % (usage,date)
     res = p.push("Comcast Bandwidth Check", 'Daily Update', message, 'http://misfoc.us', batch_mode=False)
 
-
 if __name__ == '__main__':
+    ### Settings ###
+    # configure through system variables or config.ini
+    if os.environ.has_key('USERNAME') and os.environ.has_key('PASSWORD'):
+        username = os.environ['USERNAME']
+        password = os.environ['PASSWORD']
+        nma_api_key = os.environ.get('NMA_API_KEY', '')
+    else:
+        parser = SafeConfigParser()
+        if os.path.isfile('config.ini'):
+            parser.read('config.ini')
+        else:
+            print "It looks like you are missing a config.ini file!"
+            print "Create one using the config.ini.sample"
+            raise SystemExit
+        username = parser.get('comcast', 'username')
+        password = parser.get('comcast', 'password')
+        nma_api_key = parser.get('notify_my_android', 'api')
 
     # Get command line options
     args = sys.argv[1:]
 
     usage = "Usage: comcastBandwidth [-v[v]] [-w] [--warn-num=NUM] [-a]"
     parser = OptionParser(usage)
-    parser.add_option("-v", "--verbose", 
-                    action="store_true", 
-                    dest="verbose", 
+    parser.add_option("-v", "--verbose",
+                    action="store_true",
+                    dest="verbose",
                     default=False,
                     help="Print status messages to the display")
-    parser.add_option("--vv", 
-                    action="store_true", 
-                    dest="really_verbose", 
+    parser.add_option("--vv",
+                    action="store_true",
+                    dest="really_verbose",
                     default=False,
                     help="Print status messages to the display in more detail")
     parser.add_option("-w",
@@ -209,11 +212,11 @@ if __name__ == '__main__':
                     help="Max usage before alerting"
                          " [default: %defaultGB]")
     parser.add_option("-a", "--alert",
-                    action="store_true", 
-                    dest="alert", 
+                    action="store_true",
+                    dest="alert",
                     default=False,
                     help="Sends an alert via Notify My Android")
-    
+
     (options, args) = parser.parse_args()
 
     verbose = 0
@@ -221,7 +224,7 @@ if __name__ == '__main__':
         verbose = 1
     if options.really_verbose:
         verbose = 2
-    
+
     warnMode = options.warnMode
     warn = options.warn
     alert = options.alert
@@ -234,6 +237,6 @@ if __name__ == '__main__':
         raise SystemExit
 
     print "You have used %sGB bandwidth in %s." % (usage,Comcast.dateText())
-    
-    if alert:    
+
+    if alert:
         sendAlert(nma_api_key, usage, Comcast.dateText())
