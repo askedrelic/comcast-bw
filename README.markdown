@@ -19,12 +19,12 @@ Usage
 -----
 First, you need to create a "config.ini" file. The file should be in following format:
 
-[comcast]
-username = USER@comcast.net
-password = PASSWORD
+  [comcast]
+  username = USER@comcast.net
+  password = PASSWORD
 
-[notify_my_android]
-api = KEY
+  [notify_my_android]
+  api = KEY
 
 Then run 'python comcastBandwidth.py' to get your current bandwidth usage.
 
