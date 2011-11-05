@@ -8,30 +8,32 @@ Matt Behrens <askedrelic@gmail.com> http://asktherelic.com
 Script to login to comcast's website and find your current bandwidth usage.
 """
 
+import calendar
+import cookielib
+import datetime
+import logging
+import mechanize
+import os.path
 import sys
 import urlparse
-import cookielib
 import warnings
-import logging
-import datetime
-import calendar
 
-import mechanize
+from pynma import PyNMA
+from optparse import OptionParser
+from ConfigParser import SafeConfigParser
 
-## SETTINGS
-username = "COMCAST USERNAME (username@comcast.net)"
-password = "COMCAST PASSWORD"
+parser = SafeConfigParser()
 
-help_text = """Usage: comcastBandwidth [-v[v]] [-w]
+if os.path.isfile('config.ini'):
+    parser.read('config.ini')
+else:
+    print "It looks like you are missing the config.ini file!"
+    raise SystemExit
 
-Logging:
-    -v or -vv       Add more Vs for more verbosity!
-
-Warn Mode
-    -w --warn=NUM   Only output if usage above NUM GB (default is 200GB)
-
-Misc
-    -h --help       This text :<"""
+### Settings ###
+username = parser.get('comcast', 'username')
+password = parser.get('comcast', 'password')
+nma_api_key = parser.get('notify_my_android', 'api')
 
 class Comcast(object):
     def __init__(self, verbose, username, password):
@@ -147,10 +149,6 @@ class Comcast(object):
             return 0
 
     @staticmethod
-    def isoCount(size):
-        return (size * 1024) / 700
-
-    @staticmethod
     def dateText():
         #current date
         date = datetime.date.today()
@@ -164,36 +162,62 @@ class Comcast(object):
             days_in_month += 's'
         return days + ", with %s remaining in this month" % days_in_month
 
+def sendAlert(key, usage, date):
+    global p
+    pkey = None
+    
+    p = PyNMA()
+    p.addkey(key)
+
+    message = "You have used %sGB bandwidth in %s" % (usage,date)
+    res = p.push("Comcast Bandwidth Check", 'Daily Update', message, 'http://misfoc.us', batch_mode=False)
+
+
 if __name__ == '__main__':
+
     # Get command line options and args and fuck getopt/optparse :<
     args = sys.argv[1:]
 
-    #verbose: 0 for no opts, 1 -v or 2 -v
+    usage = "Usage: comcastBandwidth [-v[v]] [-w] [--warn-num=NUM] [-a]"
+    parser = OptionParser(usage)
+    parser.add_option("-v", "--verbose", 
+                    action="store_true", 
+                    dest="verbose", 
+                    default=False,
+                    help="Print status messages to the display")
+    parser.add_option("--vv", 
+                    action="store_true", 
+                    dest="really_verbose", 
+                    default=False,
+                    help="Print status messages to the display in more detail")
+    parser.add_option("-w",
+                    action="store_true",
+                    dest="warnMode",
+                    default=False,
+                    help="Only output if usage above given value"
+                         "  [default: 200gb]")
+    parser.add_option("--warn-num",
+                    dest="warn",
+                    default="200",
+                    help="Max usage before alerting"
+                         " [default: %defaultgb]")
+    parser.add_option("-a", "--alert",
+                    action="store_true", 
+                    dest="alert", 
+                    default=False,
+                    help="Sends an alert via Notify My Android")
+    
+    (options, args) = parser.parse_args()
+
     verbose = 0
-    warn = 200
-    warnMode = False
-    if len(args) > 1:
-        print "One switch at a time."
-        raise SystemExit
-    elif len(args) == 1:
-        opt = args[0]
-        if opt == '-v':
-            verbose = 1
-        elif opt == '-vv':
-            verbose = 2
-        elif opt == '-w':
-            warnMode = True
-        elif opt.count('warn'):
-            warnMode = True
-            try:
-                o, a = opt.split('=')
-                warn = int(a)
-            except:
-                print "Warn needs specific number."
-                raise SystemExit
-        else:
-            print help_text
-            raise SystemExit
+    if options.verbose:
+        verbose = 1
+    if options.really_verbose:
+        verbose = 2
+    
+    warnMode = options.warnMode
+    warn = options.warn
+    alert = options.alert
 
     comcast = Comcast(verbose,username,password)
     usage = comcast.currentUsage()
@@ -203,5 +227,6 @@ if __name__ == '__main__':
         raise SystemExit
 
     print "You have used %sGB bandwidth in %s" % (usage,Comcast.dateText())
-    if (usage < 250):
-        print "You can still download %s linux CDs this month!" % Comcast.isoCount(250 - usage)
+    
+    if alert:    
+        sendAlert(nma_api_key, usage, Comcast.dateText())
