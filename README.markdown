@@ -19,7 +19,7 @@ Usage
 -----
 First, you need to create a "config.ini" file. The file should be in following format:
 
-  [comcast]
+    [comcast]
   username = USER@comcast.net
   password = PASSWORD
 
