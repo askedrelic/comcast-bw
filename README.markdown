@@ -17,7 +17,14 @@ For most OSX/Linux machines, easy_install will install mechanize for you (might 
 
 Usage
 -----
-First, you need to add your Comcast Email and password, by editing the settings at top of the `comcastBandwidth.py` file.
+First, you need to create a "config.ini" file. The file should be in following format:
+
+[comcast]
+username = USER@comcast.net
+password = PASSWORD
+
+[notify_my_android]
+api = KEY
 
 Then run 'python comcastBandwidth.py' to get your current bandwidth usage.
 
