@@ -1,7 +1,7 @@
 desc "Runs cron maintenance tasks."
 task :cron do
     puts "Running cron at #{Time.now.strftime('%Y/%m/%d %H:%M:%S')}..."
-    output = `python comcastBandwidth.py -w`
+    output = `python comcastBandwidth.py`
     if output.length > 0
         require 'net/smtp'
         message = "From: #{ENV['SENDGRID_USERNAME']}\n"
