@@ -52,7 +52,7 @@ warnings once you get close to limit, for the month.
     0 0 * * * /home/askedrelic/code/comcast-bw/comcastBandwidth.py -w -a
 
 ##Heroku Usage
-Don't have a server running 24x7? Run this script *for free*, once a day, on a Heroku server. See the [HEROKU_USAGE.md](comcast-bw/blob/master/HEROKU_USAGE.markdown) file
+Don't have a server running 24x7? Run this script *for free*, once a day, on a Heroku server. See the [HEROKU_USAGE.md](https://github.com/askedrelic/comcast-bw/blob/master/HEROKU_USAGE.markdown) file
 
 ##Anything Broken?
 I've tested this with my username/account. Comcast's website makes extensive
