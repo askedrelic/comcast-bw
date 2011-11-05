@@ -23,3 +23,5 @@ Assuming you have a working Heroku account and have the Heroku gem already setup
 	#assuming the last step worked, add the cron addon to
 	#check your bandwidth and get emails once a daily
 	heroku addons:add cron:daily
+
+Once everything is in place, you will have to edit the Rakefile manually to set the warning flag and only receive notifications if you are over 200GB.
