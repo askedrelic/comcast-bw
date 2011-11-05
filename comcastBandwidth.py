@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-comcast-bw.py
+comcast-bw.py v1.0
 Matt Behrens <askedrelic@gmail.com> http://asktherelic.com
 
 Script to login to comcast's website and find your current bandwidth usage.
