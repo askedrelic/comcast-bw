@@ -182,7 +182,7 @@ def sendAlert(key, usage, date):
 
 if __name__ == '__main__':
 
-    # Get command line options and args and fuck getopt/optparse :<
+    # Get command line options
     args = sys.argv[1:]
 
     usage = "Usage: comcastBandwidth [-v[v]] [-w] [--warn-num=NUM] [-a]"
@@ -202,12 +202,12 @@ if __name__ == '__main__':
                     dest="warnMode",
                     default=False,
                     help="Only output if usage above given value"
-                         "  [default: 200gb]")
+                         "  [default: 200GB]")
     parser.add_option("--warn-num",
                     dest="warn",
                     default="200",
                     help="Max usage before alerting"
-                         " [default: %defaultgb]")
+                         " [default: %defaultGB]")
     parser.add_option("-a", "--alert",
                     action="store_true", 
                     dest="alert", 
@@ -233,7 +233,7 @@ if __name__ == '__main__':
     if warnMode and (usage < warn):
         raise SystemExit
 
-    print "You have used %sGB bandwidth in %s" % (usage,Comcast.dateText())
+    print "You have used %sGB bandwidth in %s." % (usage,Comcast.dateText())
     
     if alert:    
         sendAlert(nma_api_key, usage, Comcast.dateText())
