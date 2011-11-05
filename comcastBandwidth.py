@@ -8,22 +8,32 @@ Matt Behrens <askedrelic@gmail.com> http://asktherelic.com
 Script to login to comcast's website and find your current bandwidth usage.
 """
 
+import calendar
+import cookielib
+import datetime
+import logging
+import mechanize
+import os.path
 import sys
 import urlparse
-import cookielib
 import warnings
-import logging
-import datetime
-import calendar
-import mechanize
 
 from pynma import PyNMA
 from optparse import OptionParser
+from ConfigParser import SafeConfigParser
+
+parser = SafeConfigParser()
+
+if os.path.isfile('config.ini'):
+    parser.read('config.ini')
+else:
+    print "It looks like you are missing the config.ini file!"
+    raise SystemExit
 
 ### Settings ###
-username = ""
-password = ""
-nma_api_key = ""
+username = parser.get('comcast', 'username')
+password = parser.get('comcast', 'password')
+nma_api_key = parser.get('notify_my_android', 'api')
 
 class Comcast(object):
     def __init__(self, verbose, username, password):
@@ -164,6 +174,7 @@ def sendAlert(key, usage, date):
 
 
 if __name__ == '__main__':
+
     # Get command line options and args and fuck getopt/optparse :<
     args = sys.argv[1:]
 
