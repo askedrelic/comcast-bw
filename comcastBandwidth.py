@@ -17,11 +17,15 @@ import os.path
 import sys
 import urlparse
 import warnings
-
-from pynma import PyNMA
 from optparse import OptionParser
-from ConfigParser import SafeConfigParser
 
+try:
+    from pynma import PyNMA
+    has_pynma = True
+except:
+    has_pynma = False
+
+from ConfigParser import SafeConfigParser
 parser = SafeConfigParser()
 
 if os.path.isfile('config.ini'):
@@ -163,6 +167,8 @@ class Comcast(object):
         return days + ", with %s remaining in this month" % days_in_month
 
 def sendAlert(key, usage, date):
+    if not has_pynma:
+        raise ImportError("No module named PyNMA ")
     global p
     pkey = None
     
