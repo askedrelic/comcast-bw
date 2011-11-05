@@ -31,7 +31,8 @@ parser = SafeConfigParser()
 if os.path.isfile('config.ini'):
     parser.read('config.ini')
 else:
-    print "It looks like you are missing the config.ini file!"
+    print "It looks like you are missing a config.ini file!"
+    print "Create one using the config.ini.sample"
     raise SystemExit
 
 ### Settings ###

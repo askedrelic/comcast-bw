@@ -1,0 +1,6 @@
+[comcast]
+username = USER@comcast.net
+password = PASSWORD
+
+[notify_my_android]
+api = KEY
