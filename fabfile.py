@@ -12,9 +12,9 @@ import os
 
 import commands
 
-username = os.environ['SENDGRID_USERNAME']
-password = os.environ['SENDGRID_PASSWORD']
-to_email = os.environ['CRON_EMAIL']
+username = os.environ.get('SENDGRID_USERNAME')
+password = os.environ.get('SENDGRID_PASSWORD')
+to_email = os.environ.get('CRON_EMAIL')
 
 def send_email(email_msg):
     print "Running cron at %s" % datetime.datetime.now()
@@ -31,6 +31,11 @@ def send_email(email_msg):
     s.quit()                  
 
 @task
-def send():
+def email_usage():
     output = commands.getoutput('python comcastBandwidth.py')
+    send_email(output)
+
+@task
+def email_warn_usage():
+    output = commands.getoutput('python comcastBandwidth.py -w')
     send_email(output)
