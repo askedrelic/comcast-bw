@@ -28,7 +28,7 @@ def send_email(email_msg):
     s = smtplib.SMTP('smtp.sendgrid.net', 587)
     s.login(username, password)
     s.sendmail(username, to_email, msg.as_string())
-    s.quit()                  
+    s.quit()
 
 @task
 def email_usage():
