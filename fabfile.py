@@ -17,7 +17,7 @@ password = os.environ.get('SENDGRID_PASSWORD')
 to_email = os.environ.get('CRON_EMAIL')
 
 def send_email(email_msg):
-    print "Running cron at %s" % datetime.datetime.now()
+    print "Emailing bandwidth usage at %s" % datetime.datetime.now()
 
     msg = MIMEMultipart('alternative')
     msg['Subject'] = "Comcast Bandwidth Usage"
@@ -32,10 +32,13 @@ def send_email(email_msg):
 
 @task
 def email_usage():
+    """ send an email with your bandwidth usage to CRON_EMAIL """
     output = commands.getoutput('python comcastBandwidth.py')
     send_email(output)
 
 @task
 def email_warn_usage():
+    """ if bandwidth usage over 200GB, send an email to CRON_EMAIL """
     output = commands.getoutput('python comcastBandwidth.py -w')
-    send_email(output)
+    if output:
+        send_email(output)
