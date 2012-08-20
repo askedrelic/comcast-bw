@@ -127,7 +127,7 @@ class Comcast(object):
         resp = br.open(details_link)
         log.info('Loaded details page')
         details_page = resp.read()
-        usage_span = 'PrimaryColumnContent_UsedWrapper'
+        usage_span = 'UsedForThisDevice'
         span_start = details_page.find(usage_span)
         start = details_page.find('>', span_start) + 1
         end = details_page.find('<', start)
