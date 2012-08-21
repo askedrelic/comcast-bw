@@ -6,6 +6,10 @@ process.
 
 Now, you can setup a cronjob and get daily or weekly stats emailed to you.
 
+##
+History: As of sometime mid 2012, Comcast appears to have stopped limiting bandwidth usage, see http://www.engadget.com/2012/05/17/comcast-rethinks-bandwidth-caps-trials-two-new-policies-that-in/
+There appears to be a "Note:enforcement of the 250GB data consumption threshold is currently suspended" on my page, so you probably don't need to worry about your bandwidth usage anymore.
+
 ##Requirements
 
 * Python 2.6/2.7
